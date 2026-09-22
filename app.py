@@ -35,33 +35,47 @@ def create_app():
         "dev-secret-key"
     )
 
-    # ========================================================
+    # =========================================================
     # DATABASE CONFIGURATION
-    # ========================================================
+    # Supports both local .env and Railway MySQL
+    # =========================================================
 
-    db_user = os.getenv("DB_USER")
-
-    db_password = quote_plus(
-        os.getenv("DB_PASSWORD", "")
+    database_url = (
+        os.getenv("DATABASE_URL")
+        or os.getenv("MYSQL_URL")
     )
 
-    db_host = os.getenv("DB_HOST")
+    if database_url:
+        # Railway may provide a complete MySQL connection URL.
+        # SQLAlchemy/PyMySQL expects the mysql+pymysql scheme.
+        if database_url.startswith("mysql://"):
+            database_url = database_url.replace(
+                "mysql://",
+                "mysql+pymysql://",
+                1
+            )
 
-    db_port = os.getenv(
-        "DB_PORT",
-        "3306"
-    )
+    else:
+        # Local development variables
+        db_user = os.getenv("DB_USER") or os.getenv("MYSQLUSER")
+        db_password = quote_plus(
+            os.getenv("DB_PASSWORD")
+            or os.getenv("MYSQLPASSWORD", "")
+        )
+        db_host = os.getenv("DB_HOST") or os.getenv("MYSQLHOST")
+        db_port = os.getenv("DB_PORT") or os.getenv("MYSQLPORT", "3306")
+        db_name = os.getenv("DB_NAME") or os.getenv("MYSQLDATABASE")
 
-    db_name = os.getenv("DB_NAME")
+        database_url = (
+            f"mysql+pymysql://"
+            f"{db_user}:{db_password}@"
+            f"{db_host}:{db_port}/"
+            f"{db_name}"
+        )
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"mysql+pymysql://"
-        f"{db_user}:{db_password}@"
-        f"{db_host}:{db_port}/"
-        f"{db_name}"
-    )
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 
     # ========================================================
     # INITIALIZE FLASK EXTENSIONS
