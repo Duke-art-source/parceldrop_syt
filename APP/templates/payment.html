@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Payment - Parcel Drop System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        .header {
+            background: #1f4e79;
+            color: white;
+            padding: 25px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            font-size: 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .parcel-info {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .parcel-info h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .value {
+            text-align: right;
+        }
+
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .paid {
+            color: green;
+        }
+
+        .pending {
+            color: #d97706;
+        }
+
+        .flash {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            color: #664d03;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        select:focus,
+        input:focus {
+            outline: none;
+            border-color: #1f4e79;
+        }
+
+        .reference-help {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        .payment-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            background: #198754;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .payment-button:hover {
+            background: #157347;
+        }
+
+        .back-links {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .back-links a {
+            text-decoration: none;
+            margin: 0 10px;
+            color: #1f4e79;
+            font-weight: bold;
+        }
+
+        .back-links a:hover {
+            text-decoration: underline;
+        }
+
+        .cash-note {
+            display: none;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 6px;
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            color: #2e7d32;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .value {
+                text-align: left;
+            }
+
+            .back-links a {
+                display: block;
+                margin: 10px 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <div class="header">
+
+        <h1>
+            Parcel Drop System
+        </h1>
+
+        <p>
+            Payment
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <!-- ================================================= -->
+        <!-- FLASH MESSAGES -->
+        <!-- ================================================= -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="flash">
+
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- ================================================= -->
+        <!-- PARCEL INFORMATION -->
+        <!-- ================================================= -->
+
+        <div class="parcel-info">
+
+            <h2>
+                Parcel Information
+            </h2>
+
+
+            <div class="info-row">
+
+                <span class="label">
+                    Tracking Number
+                </span>
+
+                <span class="value">
+                    {{ parcel.tracking_number }}
+                </span>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span class="label">
+                    Description
+                </span>
+
+                <span class="value">
+                    {{ parcel.parcel_description }}
+                </span>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span class="label">
+                    Pickup
+                </span>
+
+                <span class="value">
+                    {{ parcel.pickup_address }}
+                </span>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span class="label">
+                    Destination
+                </span>
+
+                <span class="value">
+                    {{ parcel.destination_address }}
+                </span>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span class="label">
+                    Delivery Charge
+                </span>
+
+                <span class="value amount">
+
+                    KES
+                    {{ "%.2f"|format(parcel.delivery_charge or 0) }}
+
+                </span>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span class="label">
+                    Payment Status
+                </span>
+
+                <span class="value status
+                    {% if parcel.payment_status == 'Paid' %}
+                        paid
+                    {% else %}
+                        pending
+                    {% endif %}
+                ">
+
+                    {{ parcel.payment_status or "Pending" }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- PAYMENT ALREADY COMPLETED -->
+        <!-- ================================================= -->
+
+        {% if parcel.payment_status == "Paid" %}
+
+            <h2>
+                Payment Completed
+            </h2>
+
+            <p>
+                This parcel has already been marked as paid.
+            </p>
+
+
+            {% if parcel.payment_method %}
+
+                <p>
+
+                    <strong>
+                        Payment Method:
+                    </strong>
+
+                    {{ parcel.payment_method }}
+
+                </p>
+
+            {% endif %}
+
+
+            {% if parcel.payment_reference %}
+
+                <p>
+
+                    <strong>
+                        Payment Reference:
+                    </strong>
+
+                    {{ parcel.payment_reference }}
+
+                </p>
+
+            {% endif %}
+
+
+            {% if parcel.payment_date %}
+
+                <p>
+
+                    <strong>
+                        Payment Date:
+                    </strong>
+
+                    {{ parcel.payment_date }}
+
+                </p>
+
+            {% endif %}
+
+        {% else %}
+
+            <!-- ============================================= -->
+            <!-- PAYMENT FORM -->
+            <!-- ============================================= -->
+
+            <h2>
+                Make Payment
+            </h2>
+
+            <p>
+                Select your payment method below.
+            </p>
+
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'parcels.parcel_payment',
+                    parcel_id=parcel.id
+                ) }}"
+            >
+
+                <!-- ========================================= -->
+                <!-- PAYMENT METHOD -->
+                <!-- ========================================= -->
+
+                <div class="form-group">
+
+                    <label for="payment_method">
+
+                        Payment Method
+
+                    </label>
+
+
+                    <select
+                        id="payment_method"
+                        name="payment_method"
+                        required
+                        onchange="paymentMethodChanged()"
+                    >
+
+                        <option value="">
+                            -- Select Payment Method --
+                        </option>
+
+                        <option value="M-Pesa">
+                            M-Pesa
+                        </option>
+
+                        <option value="Cash">
+                            Cash
+                        </option>
+
+                        <option value="Card">
+                            Card
+                        </option>
+
+                        <option value="Bank Transfer">
+                            Bank Transfer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- PAYMENT REFERENCE -->
+                <!-- ========================================= -->
+
+                <div
+                    class="form-group"
+                    id="reference-section"
+                >
+
+                    <label for="payment_reference">
+
+                        Payment Reference
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="payment_reference"
+                        name="payment_reference"
+                        placeholder="Enter transaction/reference number"
+                    >
+
+
+                    <div class="reference-help">
+
+                        Required for M-Pesa, Card and Bank Transfer.
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- CASH INFORMATION -->
+                <!-- ========================================= -->
+
+                <div
+                    class="cash-note"
+                    id="cash-note"
+                >
+
+                    Cash payment selected.
+
+                    No transaction reference is required.
+
+                    The system will record the payment as
+                    <strong>CASH</strong>.
+
+                </div>
+
+
+                <br>
+
+
+                <!-- ========================================= -->
+                <!-- SUBMIT -->
+                <!-- ========================================= -->
+
+                <button
+                    type="submit"
+                    class="payment-button"
+                >
+
+                    Record Payment
+
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- NAVIGATION -->
+        <!-- ================================================= -->
+
+        <div class="back-links">
+
+            <a href="{{ url_for('parcels.track_parcel') }}">
+
+                Track Parcel
+
+            </a>
+
+
+            {% if current_user.is_authenticated
+                  and current_user.role == "Customer" %}
+
+                <a
+                    href="{{ url_for(
+                        'parcels.customer_dashboard'
+                    ) }}"
+                >
+
+                    Customer Dashboard
+
+                </a>
+
+            {% endif %}
+
+
+            {% if current_user.is_authenticated
+                  and current_user.role in ["Admin", "Staff"] %}
+
+                <a
+                    href="{{ url_for(
+                        'parcels.manage_parcels'
+                    ) }}"
+                >
+
+                    Manage Parcels
+
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- PAYMENT METHOD JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+function paymentMethodChanged() {
+
+    const method =
+        document.getElementById("payment_method").value;
+
+    const referenceSection =
+        document.getElementById("reference-section");
+
+    const referenceInput =
+        document.getElementById("payment_reference");
+
+    const cashNote =
+        document.getElementById("cash-note");
+
+
+    if (method === "Cash") {
+
+        referenceSection.style.display = "none";
+
+        referenceInput.required = false;
+
+        referenceInput.value = "";
+
+        cashNote.style.display = "block";
+
+    }
+
+    else {
+
+        referenceSection.style.display = "block";
+
+        referenceInput.required = true;
+
+        cashNote.style.display = "none";
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

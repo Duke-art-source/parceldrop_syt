@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Track Parcel</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        color: #222;
+    }
+
+    .header {
+        background: #1f2937;
+        color: white;
+        padding: 25px;
+        text-align: center;
+    }
+
+    .header h1 {
+        margin: 0 0 8px;
+    }
+
+    .header p {
+        margin: 0;
+        color: #d1d5db;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 750px;
+        margin: 35px auto;
+    }
+
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+    }
+
+    h2 {
+        margin-top: 0;
+        color: #1f2937;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: bold;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        font-size: 16px;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #2563eb;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 7px;
+        background: #2563eb;
+        color: white;
+        font-size: 17px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    .error {
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+        padding: 15px;
+        border-radius: 7px;
+        margin-top: 20px;
+    }
+
+    .tracking-number {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        padding: 18px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .tracking-number span {
+        display: block;
+        font-size: 28px;
+        font-weight: bold;
+        color: #1d4ed8;
+        margin-top: 8px;
+    }
+
+    .details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .detail {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        padding: 15px;
+        border-radius: 7px;
+    }
+
+    .detail strong {
+        display: block;
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 7px 14px;
+        border-radius: 20px;
+        background: #fef3c7;
+        color: #92400e;
+        font-weight: bold;
+    }
+
+    .location {
+        margin-top: 20px;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 15px;
+        color: #2563eb;
+        text-decoration: none;
+    }
+
+    @media (max-width: 650px) {
+        .details {
+            grid-template-columns: 1fr;
+        }
+
+        .card {
+            padding: 20px;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Parcel Drop</h1>
+    <p>Track your parcel delivery</p>
+</div>
+
+<div class="container">
+
+```
+<!-- SEARCH -->
+<div class="card">
+
+    <h2>Track Your Parcel</h2>
+
+    <p>
+        Enter your tracking number to view the current status
+        of your parcel.
+    </p>
+
+    <form method="POST">
+
+        <div class="form-group">
+
+            <label for="tracking_number">
+                Tracking Number
+            </label>
+
+            <input
+                type="text"
+                id="tracking_number"
+                name="tracking_number"
+                placeholder="Example: PD786166"
+                required
+            >
+
+        </div>
+
+        <button type="submit">
+            Track Parcel
+        </button>
+
+    </form>
+
+    {% if searched and not parcel %}
+
+        <div class="error">
+            No parcel was found with that tracking number.
+            Please check the number and try again.
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- RESULTS -->
+{% if parcel %}
+
+<div class="card">
+
+    <div class="tracking-number">
+
+        Tracking Number
+
+        <span>
+            {{ parcel.tracking_number }}
+        </span>
+
+    </div>
+
+
+    <h2>Parcel Information</h2>
+
+    <div class="details">
+
+        <div class="detail">
+
+            <strong>Description</strong>
+
+            {{ parcel.parcel_description }}
+
+        </div>
+
+
+        <div class="detail">
+
+            <strong>Status</strong>
+
+            <span class="status">
+                {{ parcel.status }}
+            </span>
+
+        </div>
+
+
+        <div class="detail">
+
+            <strong>Pickup Date</strong>
+
+            {{ parcel.pickup_date or "Not specified" }}
+
+        </div>
+
+
+        <div class="detail">
+
+            <strong>Pickup Time</strong>
+
+            {{ parcel.pickup_time or "Not specified" }}
+
+        </div>
+
+    </div>
+
+
+    <div class="location">
+
+        <div class="detail">
+
+            <strong>Pickup Address</strong>
+
+            {{ parcel.pickup_address }}
+
+        </div>
+
+    </div>
+
+
+    <div class="location">
+
+        <div class="detail">
+
+            <strong>Destination Address</strong>
+
+            {{ parcel.destination_address }}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+</div>
+
+</body>
+</html>

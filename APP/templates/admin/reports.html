@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Parcel Reports</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        .navbar {
+            background: #1f2937;
+            color: white;
+            padding: 16px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 18px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1450px;
+            margin: 30px auto;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+
+            margin-bottom: 25px;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        button,
+        .button {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            background: #1f2937;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button-light {
+            background: #6b7280;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(190px, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+
+            border-radius: 10px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .money {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+
+            border-radius: 10px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+
+            margin-bottom: 25px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .status {
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .received {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .transit {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .out {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .delivered {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .paid {
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .unpaid {
+            color: #b91c1c;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        @media(max-width: 700px) {
+
+            .navbar {
+                align-items: flex-start;
+            }
+
+            .navbar a {
+                margin-left: 0;
+                margin-right: 15px;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<div class="navbar">
+
+    <h2>Parcel Drop System</h2>
+
+    <div>
+
+        <a href="{{ url_for('admin.dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('parcels.manage_parcels') }}">
+            Manage Parcels
+        </a>
+
+        <a href="{{ url_for('drivers.drivers_page') }}">
+            Drivers
+        </a>
+
+        <a href="{{ url_for('reports.reports_page') }}">
+            Reports
+        </a>
+
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<div class="header">
+
+    <h1>Parcel Reports</h1>
+
+    <p>
+        View parcel activity, payments, revenue and driver
+        performance.
+    </p>
+
+</div>
+
+
+<!-- =====================================================
+     FILTERS
+===================================================== -->
+
+<div class="filters">
+
+    <form method="GET"
+          action="{{ url_for('reports.reports_page') }}">
+
+        <div class="filter-row">
+
+
+            <div class="filter-group">
+
+                <label>Start Date</label>
+
+                <input
+                    type="date"
+                    name="start_date"
+                    value="{{ start_date }}"
+                >
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label>End Date</label>
+
+                <input
+                    type="date"
+                    name="end_date"
+                    value="{{ end_date }}"
+                >
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label>Status</label>
+
+                <select name="status">
+
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    {% for item in statuses %}
+
+                    <option
+                        value="{{ item }}"
+                        {% if selected_status == item %}
+                        selected
+                        {% endif %}
+                    >
+                        {{ item }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label>Payment</label>
+
+                <select name="payment_status">
+
+                    <option value="">
+                        All Payments
+                    </option>
+
+                    {% for item in payment_statuses %}
+
+                    <option
+                        value="{{ item }}"
+                        {% if selected_payment_status == item %}
+                        selected
+                        {% endif %}
+                    >
+                        {{ item }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <button type="submit">
+                    Apply Filters
+                </button>
+
+                <a
+                    class="button button-light"
+                    href="{{ url_for('reports.reports_page') }}"
+                >
+                    Reset
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     PARCEL SUMMARY
+===================================================== -->
+
+<div class="cards">
+
+
+    <div class="card">
+
+        <h3>Total Parcels</h3>
+
+        <div class="number">
+            {{ total_parcels }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Pending</h3>
+
+        <div class="number">
+            {{ pending_count }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Received</h3>
+
+        <div class="number">
+            {{ received_count }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>In Transit</h3>
+
+        <div class="number">
+            {{ in_transit_count }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Out for Delivery</h3>
+
+        <div class="number">
+            {{ out_for_delivery_count }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Delivered</h3>
+
+        <div class="number">
+            {{ delivered_count }}
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     FINANCIAL SUMMARY
+===================================================== -->
+
+<div class="section">
+
+    <h2>Financial Summary</h2>
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <h3>Total Charges</h3>
+
+            <div class="money">
+                KES {{ "%.2f"|format(total_charges) }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Paid Revenue</h3>
+
+            <div class="money">
+                KES {{ "%.2f"|format(total_revenue) }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Outstanding</h3>
+
+            <div class="money">
+                KES {{ "%.2f"|format(outstanding_revenue) }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Paid Parcels</h3>
+
+            <div class="number">
+                {{ paid_count }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Unpaid Parcels</h3>
+
+            <div class="number">
+                {{ unpaid_count }}
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PAYMENT METHODS
+===================================================== -->
+
+<div class="section">
+
+    <h2>Payment Methods</h2>
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <h3>M-Pesa</h3>
+
+            <div class="number">
+                {{ mpesa_count }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Cash</h3>
+
+            <div class="number">
+                {{ cash_count }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Card</h3>
+
+            <div class="number">
+                {{ card_count }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Bank Transfer</h3>
+
+            <div class="number">
+                {{ bank_count }}
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     DRIVER REPORT
+===================================================== -->
+
+<div class="section">
+
+    <h2>Driver Performance</h2>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Driver</th>
+                    <th>Phone</th>
+                    <th>Total</th>
+                    <th>Pending</th>
+                    <th>In Transit</th>
+                    <th>Out for Delivery</th>
+                    <th>Delivered</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in driver_reports %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ item.driver.name }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ item.driver.phone or "N/A" }}
+                    </td>
+
+                    <td>
+                        {{ item.total }}
+                    </td>
+
+                    <td>
+                        {{ item.pending }}
+                    </td>
+
+                    <td>
+                        {{ item.in_transit }}
+                    </td>
+
+                    <td>
+                        {{ item.out_for_delivery }}
+                    </td>
+
+                    <td>
+                        {{ item.delivered }}
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="7"
+                        class="empty">
+
+                        No drivers found.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PARCEL REPORT
+===================================================== -->
+
+<div class="section">
+
+    <h2>Parcel Details</h2>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Tracking</th>
+                    <th>Customer</th>
+                    <th>Pickup</th>
+                    <th>Destination</th>
+                    <th>Status</th>
+                    <th>Charge</th>
+                    <th>Payment</th>
+                    <th>Driver</th>
+                    <th>Created</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for parcel in parcels %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ parcel.tracking_number }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+                        {{ parcel.customer.name
+                           if parcel.customer
+                           else "Unknown" }}
+                    </td>
+
+
+                    <td>
+                        {{ parcel.pickup_address }}
+                    </td>
+
+
+                    <td>
+                        {{ parcel.destination_address }}
+                    </td>
+
+
+                    <td>
+
+                        {% if parcel.status == "Pending" %}
+
+                            <span class="status pending">
+                                Pending
+                            </span>
+
+                        {% elif parcel.status == "Received" %}
+
+                            <span class="status received">
+                                Received
+                            </span>
+
+                        {% elif parcel.status == "In Transit" %}
+
+                            <span class="status transit">
+                                In Transit
+                            </span>
+
+                        {% elif parcel.status == "Out for Delivery" %}
+
+                            <span class="status out">
+                                Out for Delivery
+                            </span>
+
+                        {% elif parcel.status == "Delivered" %}
+
+                            <span class="status delivered">
+                                Delivered
+                            </span>
+
+                        {% else %}
+
+                            <span class="status">
+                                {{ parcel.status }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        KES
+                        {{ "%.2f"|format(
+                            parcel.delivery_charge or 0
+                        ) }}
+                    </td>
+
+
+                    <td>
+
+                        {% if parcel.payment_status == "Paid" %}
+
+                            <span class="paid">
+                                Paid
+                            </span>
+
+                        {% else %}
+
+                            <span class="unpaid">
+                                Unpaid
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if parcel.driver %}
+
+                            {{ parcel.driver.name }}
+
+                        {% else %}
+
+                            Unassigned
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if parcel.created_at %}
+
+                            {{ parcel.created_at }}
+
+                        {% else %}
+
+                            N/A
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="9"
+                        class="empty">
+
+                        No parcels match the selected filters.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+</div>
+
+</body>
+
+</html>
+

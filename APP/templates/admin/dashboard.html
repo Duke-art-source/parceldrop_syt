@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - Parcel Drop</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        .navbar {
+            background: #1f2937;
+            color: white;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            margin-bottom: 5px;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 15px;
+            color: #666;
+        }
+
+        .card .number {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .blue {
+            border-left: 5px solid #2563eb;
+        }
+
+        .green {
+            border-left: 5px solid #16a34a;
+        }
+
+        .orange {
+            border-left: 5px solid #f59e0b;
+        }
+
+        .red {
+            border-left: 5px solid #dc2626;
+        }
+
+        .purple {
+            border-left: 5px solid #7c3aed;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-received {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-transit {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-out {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-delivered {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .quick-links a {
+            display: inline-block;
+            padding: 12px 18px;
+            background: #1f2937;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .quick-links a:hover {
+            opacity: 0.9;
+        }
+
+        .revenue {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .navbar a {
+                margin-left: 0;
+                margin-right: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+
+    <div class="navbar">
+
+        <h2>Parcel Drop System</h2>
+
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('parcels.manage_parcels') }}">Manage Parcels</a>
+            <a href="{{ url_for('drivers.drivers_page') }}">Drivers</a>
+            <a href="{{ url_for('parcels.track_parcel') }}">Track Parcel</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </div>
+
+    </div>
+
+
+    <div class="container">
+
+        <!-- WELCOME -->
+
+        <div class="welcome">
+
+            <h1>Admin Dashboard</h1>
+
+            <p>
+                Welcome, {{ current_user.name }}.
+                Here's an overview of the Parcel Drop System.
+            </p>
+
+        </div>
+
+
+        <!-- MAIN STATISTICS -->
+
+        <div class="cards">
+
+            <div class="card blue">
+                <h3>Total Parcels</h3>
+                <div class="number">
+                    {{ total_parcels }}
+                </div>
+            </div>
+
+            <div class="card orange">
+                <h3>Pending</h3>
+                <div class="number">
+                    {{ pending_parcels }}
+                </div>
+            </div>
+
+            <div class="card blue">
+                <h3>Received</h3>
+                <div class="number">
+                    {{ received_parcels }}
+                </div>
+            </div>
+
+            <div class="card purple">
+                <h3>In Transit</h3>
+                <div class="number">
+                    {{ in_transit_parcels }}
+                </div>
+            </div>
+
+            <div class="card orange">
+                <h3>Out for Delivery</h3>
+                <div class="number">
+                    {{ out_for_delivery }}
+                </div>
+            </div>
+
+            <div class="card green">
+                <h3>Delivered</h3>
+                <div class="number">
+                    {{ delivered_parcels }}
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- USERS -->
+
+        <div class="cards">
+
+            <div class="card blue">
+                <h3>Total Customers</h3>
+
+                <div class="number">
+                    {{ total_customers }}
+                </div>
+            </div>
+
+            <div class="card green">
+                <h3>Total Drivers</h3>
+
+                <div class="number">
+                    {{ total_drivers }}
+                </div>
+            </div>
+
+            <div class="card purple">
+                <h3>Total Staff</h3>
+
+                <div class="number">
+                    {{ total_staff }}
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- FINANCIAL SUMMARY -->
+
+        <div class="section">
+
+            <h2>Financial Summary</h2>
+
+            <div class="cards">
+
+                <div class="card green">
+
+                    <h3>Total Paid Revenue</h3>
+
+                    <div class="revenue">
+                        KES {{ "%.2f"|format(total_revenue) }}
+                    </div>
+
+                </div>
+
+
+                <div class="card orange">
+
+                    <h3>Outstanding Revenue</h3>
+
+                    <div class="revenue">
+                        KES {{ "%.2f"|format(unpaid_revenue) }}
+                    </div>
+
+                </div>
+
+
+                <div class="card green">
+
+                    <h3>Paid Parcels</h3>
+
+                    <div class="number">
+                        {{ paid_parcels }}
+                    </div>
+
+                </div>
+
+
+                <div class="card red">
+
+                    <h3>Unpaid Parcels</h3>
+
+                    <div class="number">
+                        {{ unpaid_parcels }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RECENT PARCELS -->
+
+        <div class="section">
+
+            <h2>Recent Parcels</h2>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Tracking Number</th>
+                            <th>Customer</th>
+                            <th>Destination</th>
+                            <th>Status</th>
+                            <th>Charge</th>
+                            <th>Payment</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for parcel in recent_parcels %}
+
+                        <tr>
+
+                            <td>
+                                <strong>{{ parcel.tracking_number }}</strong>
+                            </td>
+
+                            <td>
+                                {{ parcel.customer.name if parcel.customer else "Unknown" }}
+                            </td>
+
+                            <td>
+                                {{ parcel.destination_address }}
+                            </td>
+
+                            <td>
+
+                                {% if parcel.status == "Pending" %}
+
+                                    <span class="status status-pending">
+                                        Pending
+                                    </span>
+
+                                {% elif parcel.status == "Received" %}
+
+                                    <span class="status status-received">
+                                        Received
+                                    </span>
+
+                                {% elif parcel.status == "In Transit" %}
+
+                                    <span class="status status-transit">
+                                        In Transit
+                                    </span>
+
+                                {% elif parcel.status == "Out for Delivery" %}
+
+                                    <span class="status status-out">
+                                        Out for Delivery
+                                    </span>
+
+                                {% elif parcel.status == "Delivered" %}
+
+                                    <span class="status status-delivered">
+                                        Delivered
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status">
+                                        {{ parcel.status }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                KES {{ "%.2f"|format(parcel.delivery_charge or 0) }}
+                            </td>
+
+                            <td>
+                                {{ parcel.payment_status or "Unpaid" }}
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="6">
+                                No parcels found.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- RECENT DELIVERIES -->
+
+        <div class="section">
+
+            <h2>Recent Deliveries</h2>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Tracking Number</th>
+                            <th>Customer</th>
+                            <th>Destination</th>
+                            <th>Status</th>
+                            <th>Updated</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for parcel in recent_deliveries %}
+
+                        <tr>
+
+                            <td>
+                                <strong>{{ parcel.tracking_number }}</strong>
+                            </td>
+
+                            <td>
+                                {{ parcel.customer.name if parcel.customer else "Unknown" }}
+                            </td>
+
+                            <td>
+                                {{ parcel.destination_address }}
+                            </td>
+
+                            <td>
+                                <span class="status status-delivered">
+                                    Delivered
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ parcel.updated_at or "N/A" }}
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="5">
+                                No deliveries yet.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- QUICK LINKS -->
+
+        <div class="section">
+
+            <h2>Quick Actions</h2>
+
+            <div class="quick-links">
+
+                <a href="{{ url_for('parcels.manage_parcels') }}">
+                    Manage Parcels
+                </a>
+
+                <a href="{{ url_for('drivers.drivers_page') }}">
+                    Manage Drivers
+                </a>
+
+                <a href="{{ url_for('parcels.book_parcel') }}">
+    Create Booking
+</a>
+
+                <a href="{{ url_for('parcels.track_parcel') }}">
+                    Track Parcel
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
+

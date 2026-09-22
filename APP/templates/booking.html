@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Book a Parcel Delivery</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #d1d5db;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 850px;
+            margin: 35px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+
+        .section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .section:first-of-type {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .location-box {
+            background: #f9fafb;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 18px;
+        }
+
+        .location-box h3 {
+            margin-top: 0;
+        }
+
+        .payment-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .payment-box h3 {
+            margin-top: 0;
+            color: #166534;
+        }
+
+        .currency-input {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .currency {
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            background: #e5e7eb;
+            border: 1px solid #d1d5db;
+            border-right: none;
+            border-radius: 7px 0 0 7px;
+            font-weight: bold;
+        }
+
+        .currency-input input {
+            border-radius: 0 7px 7px 0;
+        }
+
+        .help-text {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #1d4ed8;
+        }
+
+        .required {
+            color: red;
+        }
+
+        @media (max-width: 650px) {
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+
+    <h1>Parcel Drop</h1>
+
+    <p>
+        Book your parcel delivery online
+    </p>
+
+</div>
+
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>
+            Book a Parcel Delivery
+        </h2>
+
+
+        <form method="POST">
+
+
+            <!-- CUSTOMER DETAILS -->
+
+            <div class="section">
+
+                <h2>
+                    Customer Details
+                </h2>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Full Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Email Address
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="example@email.com"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone Number
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="07XXXXXXXX"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PARCEL DETAILS -->
+
+            <div class="section">
+
+                <h2>
+                    Parcel Details
+                </h2>
+
+
+                <div class="form-group">
+
+                    <label>
+                        What are you sending?
+                        <span class="required">*</span>
+                    </label>
+
+                    <textarea
+                        name="parcel_description"
+                        placeholder="Example: Documents, clothes, electronics..."
+                        required
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <!-- DELIVERY LOCATIONS -->
+
+            <div class="section">
+
+                <h2>
+                    Delivery Locations
+                </h2>
+
+
+                <!-- PICKUP -->
+
+                <div class="location-box">
+
+                    <h3>
+                        📍 Pickup Location
+                    </h3>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Pickup Address
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="pickup_address"
+                            placeholder="Enter pickup address"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- DESTINATION -->
+
+                <div class="location-box">
+
+                    <h3>
+                        📍 Destination
+                    </h3>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Destination Address
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="destination_address"
+                            placeholder="Enter destination address"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PICKUP SCHEDULE -->
+
+            <div class="section">
+
+                <h2>
+                    Pickup Schedule
+                </h2>
+
+
+                <div class="row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Pickup Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="pickup_date"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Pickup Time
+                        </label>
+
+                        <input
+                            type="time"
+                            name="pickup_time"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PAYMENT / DELIVERY CHARGE -->
+
+            <div class="section">
+
+                <div class="payment-box">
+
+                    <h3>
+                        💰 Delivery Charge
+                    </h3>
+
+                    <div class="form-group">
+
+                        <label>
+                            Delivery Charge
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="currency-input">
+
+                            <span class="currency">
+                                KES
+                            </span>
+
+                            <input
+                                type="number"
+                                name="delivery_charge"
+                                min="0"
+                                step="0.01"
+                                placeholder="500.00"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="help-text">
+                            Enter the agreed delivery charge for this parcel.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <div class="section">
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
+                    Book Parcel
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

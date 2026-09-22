@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Dashboard - Parcel Drop System</title>
+
+</head>
+
+<body>
+
+    <h1>Parcel Drop System</h1>
+
+    <h2>Customer Dashboard</h2>
+
+    <p>
+        Welcome, {{ current_user.name }}.
+    </p>
+
+    <p>
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+    </p>
+
+    <hr>
+
+    <!-- =====================================================
+         DASHBOARD STATISTICS
+         ===================================================== -->
+
+    <h3>My Parcel Summary</h3>
+
+    <p>
+        <strong>Total Parcels:</strong>
+        {{ total_parcels }}
+    </p>
+
+    <p>
+        <strong>Pending:</strong>
+        {{ pending_parcels }}
+    </p>
+
+    <p>
+        <strong>In Transit:</strong>
+        {{ in_transit_parcels }}
+    </p>
+
+    <p>
+        <strong>Delivered:</strong>
+        {{ delivered_parcels }}
+    </p>
+
+    <hr>
+
+    <!-- =====================================================
+         PARCEL HISTORY
+         ===================================================== -->
+
+    <h3>My Parcels</h3>
+
+    {% if customer_parcels %}
+
+        <table border="1"
+               cellpadding="8"
+               cellspacing="0">
+
+            <thead>
+
+                <tr>
+
+                    <th>Tracking Number</th>
+
+                    <th>Description</th>
+
+                    <th>Pickup</th>
+
+                    <th>Destination</th>
+
+                    <th>Pickup Date</th>
+
+                    <th>Pickup Time</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for parcel in customer_parcels %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                <a href="{{ url_for(
+    'parcels.customer_parcel_details',
+    parcel_id=parcel.id
+) }}">
+    <strong>
+        {{ parcel.tracking_number }}
+    </strong>
+</a>
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ parcel.parcel_description }}
+                        </td>
+
+                        <td>
+                            {{ parcel.pickup_address }}
+                        </td>
+
+                        <td>
+                            {{ parcel.destination_address }}
+                        </td>
+
+                        <td>
+                            {% if parcel.pickup_date %}
+                                {{ parcel.pickup_date }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if parcel.pickup_time %}
+                                {{ parcel.pickup_time }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <strong>
+                                {{ parcel.status }}
+                            </strong>
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    {% else %}
+
+        <p>
+            You do not have any parcels yet.
+        </p>
+
+    {% endif %}
+
+    <hr>
+
+    <p>
+        <a href="{{ url_for('parcels.book_parcel') }}">
+            Book a New Parcel
+        </a>
+    </p>
+
+</body>
+
+</html>

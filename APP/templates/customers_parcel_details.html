@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Parcel {{ parcel.tracking_number }} - Parcel Drop System
+    </title>
+
+</head>
+
+<body>
+
+    <h1>Parcel Drop System</h1>
+
+    <h2>Parcel Details</h2>
+
+    <p>
+        Welcome, {{ current_user.name }}.
+    </p>
+
+    <p>
+        <a href="{{ url_for('parcels.customer_dashboard') }}">
+            ← Back to Dashboard
+        </a>
+    </p>
+
+    <p>
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+    </p>
+
+    <hr>
+
+    <!-- =====================================================
+         TRACKING NUMBER
+         ===================================================== -->
+
+    <h3>Tracking Number</h3>
+
+    <h2>
+        {{ parcel.tracking_number }}
+    </h2>
+
+    <!-- =====================================================
+         PARCEL INFORMATION
+         ===================================================== -->
+
+    <h3>Parcel Information</h3>
+
+    <p>
+        <strong>Description:</strong>
+        {{ parcel.parcel_description }}
+    </p>
+
+    <p>
+        <strong>Pickup:</strong>
+        {{ parcel.pickup_address }}
+    </p>
+
+    <p>
+        <strong>Destination:</strong>
+        {{ parcel.destination_address }}
+    </p>
+
+    <p>
+        <strong>Pickup Date:</strong>
+
+        {% if parcel.pickup_date %}
+            {{ parcel.pickup_date }}
+        {% else %}
+            -
+        {% endif %}
+
+    </p>
+
+    <p>
+        <strong>Pickup Time:</strong>
+
+        {% if parcel.pickup_time %}
+            {{ parcel.pickup_time }}
+        {% else %}
+            -
+        {% endif %}
+
+    </p>
+
+    <hr>
+
+    <!-- =====================================================
+         CURRENT STATUS
+         ===================================================== -->
+
+    <h3>Current Status</h3>
+
+    <h2>
+        {{ parcel.status }}
+    </h2>
+
+    <hr>
+
+    <!-- =====================================================
+         DELIVERY PROGRESS
+         ===================================================== -->
+
+    <h3>Delivery Progress</h3>
+
+    <ol>
+
+        {% for status in statuses %}
+
+            <li>
+
+                {% if loop.index0 < current_status_index %}
+
+                    ✓
+
+                {% elif loop.index0 == current_status_index %}
+
+                    ●
+
+                {% else %}
+
+                    ○
+
+                {% endif %}
+
+                <strong>
+                    {{ status }}
+                </strong>
+
+            </li>
+
+            {% if not loop.last %}
+
+                <br>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </ol>
+
+    <hr>
+
+    <p>
+        <a href="{{ url_for('parcels.customer_dashboard') }}">
+            ← Back to My Parcels
+        </a>
+    </p>
+
+</body>
+
+</html>

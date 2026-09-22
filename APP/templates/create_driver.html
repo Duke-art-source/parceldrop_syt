@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Driver</title>
+</head>
+
+<body>
+
+<h1>Create Driver</h1>
+
+<a href="{{ url_for('drivers.drivers_page') }}">
+    Back to Drivers
+</a>
+
+<hr>
+
+<form method="POST">
+
+    <p>
+        <label>Full Name</label><br>
+        <input type="text" name="name" required>
+    </p>
+
+    <p>
+        <label>Email</label><br>
+        <input type="email" name="email" required>
+    </p>
+
+    <p>
+        <label>Phone</label><br>
+        <input type="text" name="phone" required>
+    </p>
+
+    <p>
+        <label>Username</label><br>
+        <input type="text" name="username" required>
+    </p>
+
+    <p>
+        <label>Password</label><br>
+        <input type="password" name="password" required>
+    </p>
+
+    <button type="submit">
+        Create Driver
+    </button>
+
+</form>
+
+</body>
+</html>

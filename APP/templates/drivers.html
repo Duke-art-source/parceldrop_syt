@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Driver Management</title>
+</head>
+
+<body>
+
+<h1>Driver Management</h1>
+
+<a href="{{ url_for('drivers.create_driver') }}">
+    + Add Driver
+</a>
+
+<hr>
+
+{% if drivers %}
+
+<table border="1" cellpadding="10">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Username</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for driver in drivers %}
+
+        <tr>
+            <td>{{ driver.id }}</td>
+            <td>{{ driver.name }}</td>
+            <td>{{ driver.email }}</td>
+            <td>{{ driver.phone }}</td>
+            <td>{{ driver.username }}</td>
+
+            <td>
+                {% if driver.status %}
+                    Active
+                {% else %}
+                    Inactive
+                {% endif %}
+            </td>
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<p>No drivers have been created yet.</p>
+
+{% endif %}
+
+</body>
+</html>

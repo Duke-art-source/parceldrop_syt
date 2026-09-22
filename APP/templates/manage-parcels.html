@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Parcels - Parcel Drop System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================== */
+
+        .navbar {
+            background: #1f2937;
+            color: white;
+            padding: 16px 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+
+            padding: 9px 13px;
+
+            border-radius: 5px;
+
+            background: #374151;
+
+            font-size: 13px;
+        }
+
+        .nav-links a:hover {
+            background: #4b5563;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================== */
+
+        .container {
+            width: 96%;
+            max-width: 1700px;
+
+            margin: 25px auto;
+        }
+
+
+        /* =========================
+           PAGE HEADER
+        ========================== */
+
+        .page-header {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .page-header h1 {
+            margin: 0 0 7px 0;
+
+            font-size: 28px;
+        }
+
+        .page-header p {
+            margin: 0;
+
+            color: #6b7280;
+        }
+
+
+        /* =========================
+           FLASH MESSAGES
+        ========================== */
+
+        .flash {
+            padding: 13px 16px;
+
+            border-radius: 6px;
+
+            margin-bottom: 15px;
+
+            font-size: 14px;
+        }
+
+        .flash.success {
+            background: #d1fae5;
+            color: #065f46;
+
+            border: 1px solid #a7f3d0;
+        }
+
+        .flash.danger {
+            background: #fee2e2;
+            color: #991b1b;
+
+            border: 1px solid #fecaca;
+        }
+
+        .flash.warning {
+            background: #fef3c7;
+            color: #92400e;
+
+            border: 1px solid #fde68a;
+        }
+
+        .flash.info {
+            background: #dbeafe;
+            color: #1e40af;
+
+            border: 1px solid #bfdbfe;
+        }
+
+
+        /* =========================
+           TABLE
+        ========================== */
+
+        .table-container {
+            background: white;
+
+            border-radius: 10px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            min-width: 1400px;
+
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #111827;
+
+            color: white;
+
+            padding: 14px 12px;
+
+            text-align: left;
+
+            font-size: 13px;
+
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 12px;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            vertical-align: top;
+
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+
+        /* =========================
+           TRACKING
+        ========================== */
+
+        .tracking {
+            font-weight: bold;
+
+            color: #2563eb;
+
+            white-space: nowrap;
+        }
+
+        .small-text {
+            color: #6b7280;
+
+            font-size: 11px;
+
+            margin-top: 4px;
+        }
+
+
+        /* =========================
+           CUSTOMER
+        ========================== */
+
+        .customer-name {
+            font-weight: bold;
+
+            color: #111827;
+        }
+
+
+        /* =========================
+           DESCRIPTION
+        ========================== */
+
+        .description {
+            max-width: 180px;
+
+            line-height: 1.45;
+        }
+
+
+        /* =========================
+           ADDRESS
+        ========================== */
+
+        .address {
+            max-width: 190px;
+
+            line-height: 1.45;
+        }
+
+
+        /* =========================
+           BADGES
+        ========================== */
+
+        .badge {
+            display: inline-block;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+        }
+
+
+        /* =========================
+           PARCEL STATUS
+        ========================== */
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-received {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-transit {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-out {
+            background: #f3e8ff;
+            color: #7e22ce;
+        }
+
+        .status-delivered {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+
+        /* =========================
+           PAYMENT STATUS
+        ========================== */
+
+        .payment-paid {
+            background: #d1fae5;
+
+            color: #065f46;
+        }
+
+        .payment-pending {
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+        .payment-other {
+            background: #e5e7eb;
+
+            color: #374151;
+        }
+
+        .payment-info {
+            min-width: 160px;
+        }
+
+        .payment-amount {
+            margin-top: 8px;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            color: #111827;
+        }
+
+        .payment-method {
+            margin-top: 7px;
+
+            color: #374151;
+
+            font-size: 12px;
+        }
+
+        .payment-reference {
+            margin-top: 5px;
+
+            color: #6b7280;
+
+            font-size: 11px;
+
+            word-break: break-word;
+        }
+
+        .payment-date {
+            margin-top: 5px;
+
+            color: #6b7280;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================
+           DRIVER
+        ========================== */
+
+        .driver-name {
+            font-weight: bold;
+
+            color: #111827;
+
+            margin-bottom: 7px;
+        }
+
+        .no-driver {
+            color: #dc2626;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+        }
+
+        .assign-form {
+            min-width: 180px;
+        }
+
+        .assign-form select {
+            width: 100%;
+
+            padding: 8px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 5px;
+
+            background: white;
+
+            margin-bottom: 7px;
+        }
+
+        .assign-btn {
+            width: 100%;
+
+            border: none;
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 8px 10px;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        .assign-btn:hover {
+            background: #1d4ed8;
+        }
+
+
+        /* =========================
+           STATUS UPDATE
+        ========================== */
+
+        .status-form {
+            min-width: 170px;
+        }
+
+        .status-form select {
+            width: 100%;
+
+            padding: 8px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 5px;
+
+            background: white;
+
+            margin-bottom: 7px;
+        }
+
+        .status-btn {
+            width: 100%;
+
+            border: none;
+
+            background: #059669;
+
+            color: white;
+
+            padding: 8px 10px;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        .status-btn:hover {
+            background: #047857;
+        }
+
+
+        /* =========================
+           EMPTY STATE
+        ========================== */
+
+        .empty {
+            text-align: center;
+
+            padding: 55px 20px;
+
+            color: #6b7280;
+        }
+
+        .empty h3 {
+            margin-bottom: 8px;
+
+            color: #374151;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 768px) {
+
+            .container {
+                width: 94%;
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+
+            table {
+                min-width: 1300px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVIGATION
+====================================================== -->
+
+<div class="navbar">
+
+    <h2>
+        Parcel Drop System
+    </h2>
+
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('parcels.manage_parcels') }}">
+            Manage Parcels
+        </a>
+
+        <a href="{{ url_for('drivers.drivers_page') }}">
+            Drivers
+        </a>
+
+        <a href="{{ url_for('parcels.track_parcel') }}">
+            Track Parcel
+        </a>
+
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     MAIN
+====================================================== -->
+
+<div class="container">
+
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <h1>
+            Manage Parcels
+        </h1>
+
+        <p>
+            Manage parcel payments, driver assignments and delivery status.
+        </p>
+
+    </div>
+
+
+
+    <!-- =================================================
+         FLASH MESSAGES
+    ================================================== -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="flash {{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+
+    <!-- =================================================
+         PARCEL TABLE
+    ================================================== -->
+
+    <div class="table-container">
+
+
+        {% if parcels %}
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Tracking Number
+                    </th>
+
+                    <th>
+                        Customer
+                    </th>
+
+                    <th>
+                        Parcel
+                    </th>
+
+                    <th>
+                        Pickup
+                    </th>
+
+                    <th>
+                        Destination
+                    </th>
+
+                    <th>
+                        Payment
+                    </th>
+
+                    <th>
+                        Driver Assignment
+                    </th>
+
+                    <th>
+                        Parcel Status
+                    </th>
+
+                    <th>
+                        Update Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+            {% for parcel in parcels %}
+
+
+                <tr>
+
+
+                    <!-- =================================
+                         TRACKING
+                    ================================== -->
+
+                    <td>
+
+                        <div class="tracking">
+
+                            {{ parcel.tracking_number }}
+
+                        </div>
+
+
+                        <div class="small-text">
+
+                            Parcel ID:
+                            {{ parcel.id }}
+
+                        </div>
+
+
+                        {% if parcel.created_at %}
+
+                        <div class="small-text">
+
+                            Created:
+                            {{ parcel.created_at.strftime('%d %b %Y %H:%M') }}
+
+                        </div>
+
+                        {% endif %}
+
+                    </td>
+
+
+
+                    <!-- =================================
+                         CUSTOMER
+                    ================================== -->
+
+                    <td>
+
+                        {% if parcel.customer %}
+
+                            <div class="customer-name">
+
+                                {{ parcel.customer.name }}
+
+                            </div>
+
+
+                            {% if parcel.customer.email %}
+
+                            <div class="small-text">
+
+                                {{ parcel.customer.email }}
+
+                            </div>
+
+                            {% endif %}
+
+
+                            {% if parcel.customer.phone %}
+
+                            <div class="small-text">
+
+                                {{ parcel.customer.phone }}
+
+                            </div>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <div class="small-text">
+
+                                Customer unavailable
+
+                            </div>
+
+                        {% endif %}
+
+                    </td>
+
+
+
+                    <!-- =================================
+                         PARCEL DESCRIPTION
+                    ================================== -->
+
+                    <td>
+
+                        <div class="description">
+
+                            {% if parcel.parcel_description %}
+
+                                {{ parcel.parcel_description }}
+
+                            {% else %}
+
+                                No description
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+
+
+                    <!-- =================================
+                         PICKUP
+                    ================================== -->
+
+                    <td>
+
+                        <div class="address">
+
+                            {% if parcel.pickup_address %}
+
+                                {{ parcel.pickup_address }}
+
+                            {% else %}
+
+                                Not provided
+
+                            {% endif %}
+
+                        </div>
+
+
+                        {% if parcel.pickup_date %}
+
+                        <div class="small-text">
+
+                            Pickup:
+
+                            {{ parcel.pickup_date.strftime('%d %b %Y') }}
+
+                            {% if parcel.pickup_time %}
+
+                                {{ parcel.pickup_time.strftime('%H:%M') }}
+
+                            {% endif %}
+
+                        </div>
+
+                        {% endif %}
+
+                    </td>
+
+
+
+                    <!-- =================================
+                         DESTINATION
+                    ================================== -->
+
+                    <td>
+
+                        <div class="address">
+
+                            {% if parcel.destination_address %}
+
+                                {{ parcel.destination_address }}
+
+                            {% else %}
+
+                                Not provided
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+
+
+                    <!-- =================================
+                         PAYMENT
+                    ================================== -->
+
+                    <td>
+
+                        <div class="payment-info">
+
+
+                            {% if parcel.payment_status == "Paid" %}
+
+                                <span class="badge payment-paid">
+                                    PAID
+                                </span>
+
+
+                            {% elif parcel.payment_status == "Pending" %}
+
+                                <span class="badge payment-pending">
+                                    PAYMENT PENDING
+                                </span>
+
+
+                            {% else %}
+
+                                <span class="badge payment-other">
+
+                                    {{ parcel.payment_status or "NOT PAID" }}
+
+                                </span>
+
+                            {% endif %}
+
+
+
+                            {% if parcel.delivery_charge is not none %}
+
+                                <div class="payment-amount">
+
+                                    KSh
+                                    {{ "%.2f"|format(parcel.delivery_charge) }}
+
+                                </div>
+
+                            {% endif %}
+
+
+
+                            {% if parcel.payment_method %}
+
+                                <div class="payment-method">
+
+                                    Method:
+
+                                    <strong>
+                                        {{ parcel.payment_method }}
+                                    </strong>
+
+                                </div>
+
+                            {% endif %}
+
+
+
+                            {% if parcel.payment_reference %}
+
+                                <div class="payment-reference">
+
+                                    Reference:
+
+                                    {{ parcel.payment_reference }}
+
+                                </div>
+
+                            {% endif %}
+
+
+
+                            {% if parcel.payment_date %}
+
+                                <div class="payment-date">
+
+                                    Paid:
+
+                                    {{ parcel.payment_date.strftime('%d %b %Y %H:%M') }}
+
+                                </div>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </td>
+
+
+
+                    <!-- =================================
+                         DRIVER ASSIGNMENT
+                    ================================== -->
+
+                    <td>
+
+
+                        {% if parcel.driver %}
+
+
+                            <div class="driver-name">
+
+                                {{ parcel.driver.name }}
+
+                            </div>
+
+
+                            {% if parcel.driver.phone %}
+
+                                <div class="small-text">
+
+                                    Phone:
+                                    {{ parcel.driver.phone }}
+
+                                </div>
+
+                            {% endif %}
+
+
+                        {% else %}
+
+
+                            <div class="no-driver">
+
+                                Not Assigned
+
+                            </div>
+
+
+                        {% endif %}
+
+
+
+                        <!-- ASSIGN DRIVER -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('drivers.assign_driver', parcel_id=parcel.id) }}"
+                            class="assign-form"
+                        >
+
+
+                            <select name="driver_id">
+
+                                <option value="">
+                                    -- Select Driver --
+                                </option>
+
+
+                                {% for driver in drivers %}
+
+                                    <option
+                                        value="{{ driver.id }}"
+                                        {% if parcel.assigned_driver_id == driver.id %}
+                                            selected
+                                        {% endif %}
+                                    >
+
+                                        {{ driver.name }}
+
+                                    </option>
+
+                                {% endfor %}
+
+
+                            </select>
+
+
+                            <button
+                                type="submit"
+                                class="assign-btn"
+                            >
+
+                                {% if parcel.assigned_driver_id %}
+
+                                    Reassign Driver
+
+                                {% else %}
+
+                                    Assign Driver
+
+                                {% endif %}
+
+                            </button>
+
+
+                        </form>
+
+
+                    </td>
+
+
+
+                    <!-- =================================
+                         CURRENT STATUS
+                    ================================== -->
+
+                    <td>
+
+
+                        {% if parcel.status == "Pending" %}
+
+                            <span class="badge status-pending">
+                                Pending
+                            </span>
+
+
+                        {% elif parcel.status == "Received" %}
+
+                            <span class="badge status-received">
+                                Received
+                            </span>
+
+
+                        {% elif parcel.status == "In Transit" %}
+
+                            <span class="badge status-transit">
+                                In Transit
+                            </span>
+
+
+                        {% elif parcel.status == "Out for Delivery" %}
+
+                            <span class="badge status-out">
+                                Out for Delivery
+                            </span>
+
+
+                        {% elif parcel.status == "Delivered" %}
+
+                            <span class="badge status-delivered">
+                                Delivered
+                            </span>
+
+
+                        {% else %}
+
+                            <span class="badge">
+
+                                {{ parcel.status or "Unknown" }}
+
+                            </span>
+
+                        {% endif %}
+
+
+                    </td>
+
+
+
+                    <!-- =================================
+                         UPDATE STATUS
+                    ================================== -->
+
+                    <td>
+
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('parcels.update_parcel_status', parcel_id=parcel.id) }}"
+                            class="status-form"
+                        >
+
+
+                            <select
+                                name="status"
+                                required
+                            >
+
+                                <option value="">
+                                    -- Change Status --
+                                </option>
+
+
+                                <option
+                                    value="Pending"
+                                    {% if parcel.status == "Pending" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Pending
+                                </option>
+
+
+                                <option
+                                    value="Received"
+                                    {% if parcel.status == "Received" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Received
+                                </option>
+
+
+                                <option
+                                    value="In Transit"
+                                    {% if parcel.status == "In Transit" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    In Transit
+                                </option>
+
+
+                                <option
+                                    value="Out for Delivery"
+                                    {% if parcel.status == "Out for Delivery" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Out for Delivery
+                                </option>
+
+
+                                <option
+                                    value="Delivered"
+                                    {% if parcel.status == "Delivered" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Delivered
+                                </option>
+
+
+                            </select>
+
+
+                            <button
+                                type="submit"
+                                class="status-btn"
+                            >
+
+                                Update Status
+
+                            </button>
+
+
+                        </form>
+
+
+                    </td>
+
+
+                </tr>
+
+
+            {% endfor %}
+
+
+            </tbody>
+
+        </table>
+
+
+        {% else %}
+
+
+            <!-- =================================
+                 EMPTY STATE
+            ================================== -->
+
+            <div class="empty">
+
+                <h3>
+                    No Parcels Found
+                </h3>
+
+                <p>
+                    There are currently no parcels in the system.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Driver Dashboard - Parcel Drop</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        .navbar {
+            background: #1f2937;
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: #dc2626;
+            padding: 9px 15px;
+            border-radius: 6px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
+
+        .welcome {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .welcome h1 {
+            margin-top: 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px;
+            font-size: 15px;
+            color: #666;
+        }
+
+        .stat-card .number {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .parcel-card {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .parcel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tracking {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 7px;
+        }
+
+        .detail strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            background: #e5e7eb;
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.received {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status.transit {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .status.out {
+            background: #cffafe;
+            color: #155e75;
+        }
+
+        .status.delivered {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .update-box {
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .update-box label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .update-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            min-width: 220px;
+        }
+
+        button {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .flash {
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            border-radius: 7px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .empty {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 15px;
+            }
+
+            .container {
+                width: 92%;
+            }
+
+            .update-form {
+                flex-direction: column;
+            }
+
+            select,
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <h2>🚚 Parcel Drop - Driver</h2>
+
+    <a href="{{ url_for('auth.logout') }}">
+        Logout
+    </a>
+</nav>
+
+
+<div class="container">
+
+    <div class="welcome">
+        <h1>Driver Dashboard</h1>
+
+        <p>
+            Welcome,
+            <strong>{{ current_user.name }}</strong>
+        </p>
+
+        <p>
+            Manage your assigned parcels and update their delivery status.
+        </p>
+    </div>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="flash">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+    {% endwith %}
+
+
+    <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <h3>Total Assigned</h3>
+            <div class="number">
+                {{ total }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3>Pending</h3>
+            <div class="number">
+                {{ pending }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3>Received</h3>
+            <div class="number">
+                {{ received }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3>In Transit</h3>
+            <div class="number">
+                {{ in_transit }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3>Out for Delivery</h3>
+            <div class="number">
+                {{ out_for_delivery }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3>Delivered</h3>
+            <div class="number">
+                {{ delivered }}
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ASSIGNED PARCELS
+    ====================================================== -->
+
+    {% if parcels %}
+
+        {% for parcel in parcels %}
+
+            <div class="parcel-card">
+
+                <div class="parcel-header">
+
+                    <div class="tracking">
+                        {{ parcel.tracking_number }}
+                    </div>
+
+                    {% if parcel.status == "Pending" %}
+
+                        <span class="status pending">
+                            Pending
+                        </span>
+
+                    {% elif parcel.status == "Received" %}
+
+                        <span class="status received">
+                            Received
+                        </span>
+
+                    {% elif parcel.status == "In Transit" %}
+
+                        <span class="status transit">
+                            In Transit
+                        </span>
+
+                    {% elif parcel.status == "Out for Delivery" %}
+
+                        <span class="status out">
+                            Out for Delivery
+                        </span>
+
+                    {% elif parcel.status == "Delivered" %}
+
+                        <span class="status delivered">
+                            Delivered
+                        </span>
+
+                    {% else %}
+
+                        <span class="status">
+                            {{ parcel.status }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="details">
+
+                    <div class="detail">
+                        <strong>Customer</strong>
+                        {{ parcel.customer.name if parcel.customer else "N/A" }}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Phone</strong>
+                        {{ parcel.customer.phone if parcel.customer else "N/A" }}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Parcel</strong>
+                        {{ parcel.parcel_description or "N/A" }}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Pickup Location</strong>
+                        {{ parcel.pickup_address or "N/A" }}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Destination</strong>
+                        {{ parcel.destination_address or "N/A" }}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Payment</strong>
+                        {{ parcel.payment_status or "Unpaid" }}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Delivery Charge</strong>
+                        KSh {{ "%.2f"|format(parcel.delivery_charge or 0) }}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Booking Date</strong>
+                        {{ parcel.created_at.strftime("%Y-%m-%d %H:%M") if parcel.created_at else "N/A" }}
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     STATUS UPDATE
+                ================================================== -->
+
+                <div class="update-box">
+
+                    <label>
+                        Update Parcel Status
+                    </label>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'drivers.update_driver_status',
+                            parcel_id=parcel.id
+                        ) }}"
+                        class="update-form"
+                    >
+
+                        <select name="status" required>
+
+                            <option value="">
+                                -- Select Status --
+                            </option>
+
+                            <option value="Pending"
+                                {% if parcel.status == "Pending" %}selected{% endif %}>
+                                Pending
+                            </option>
+
+                            <option value="Received"
+                                {% if parcel.status == "Received" %}selected{% endif %}>
+                                Received
+                            </option>
+
+                            <option value="In Transit"
+                                {% if parcel.status == "In Transit" %}selected{% endif %}>
+                                In Transit
+                            </option>
+
+                            <option value="Out for Delivery"
+                                {% if parcel.status == "Out for Delivery" %}selected{% endif %}>
+                                Out for Delivery
+                            </option>
+
+                            <option value="Delivered"
+                                {% if parcel.status == "Delivered" %}selected{% endif %}>
+                                Delivered
+                            </option>
+
+                        </select>
+
+                        <button type="submit">
+                            Update Status
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+
+            <h2>No Parcels Assigned</h2>
+
+            <p>
+                You currently have no parcels assigned to you.
+            </p>
+
+            <p>
+                Please contact the administrator for new deliveries.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
+
