@@ -104,14 +104,7 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))        from app import app, db
-        from APP.models.user import User
-        app.app_context().push()
-        user = User(name="Admin", email="admin@test.com", role="Admin")
-        user.set_password("admin123")
-        db.session.add(user)
-        db.session.commit()
-        print("User created!")
+        return User.query.get(int(user_id))
 
     # ========================================================
     # REGISTER BLUEPRINTS
