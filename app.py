@@ -37,34 +37,26 @@ def create_app():
 
     # =========================================================
     # DATABASE CONFIGURATION
-    # Supports both local .env and Railway MySQL
     # =========================================================
 
-    database_url = (
-        os.getenv("DATABASE_URL")
-        or os.getenv("MYSQL_URL")
-    )
+    database_url = os.getenv("DATABASE_URL")
 
     if database_url:
-        # Railway may provide a complete MySQL connection URL.
-        # SQLAlchemy/PyMySQL expects the mysql+pymysql scheme.
+        # Railway provides mysql:// URL, convert to mysql+pymysql://
         if database_url.startswith("mysql://"):
             database_url = database_url.replace(
                 "mysql://",
                 "mysql+pymysql://",
                 1
             )
-
+        print(f"[Railway] Using private MySQL connection")
     else:
-        # Local development variables
-        db_user = os.getenv("DB_USER") or os.getenv("MYSQLUSER")
-        db_password = quote_plus(
-            os.getenv("DB_PASSWORD")
-            or os.getenv("MYSQLPASSWORD", "")
-        )
-        db_host = os.getenv("DB_HOST") or os.getenv("MYSQLHOST")
-        db_port = os.getenv("DB_PORT") or os.getenv("MYSQLPORT", "3306")
-        db_name = os.getenv("DB_NAME") or os.getenv("MYSQLDATABASE")
+        # Local development fallback
+        db_user = os.getenv("DB_USER", "root")
+        db_password = quote_plus(os.getenv("DB_PASSWORD", ""))
+        db_host = os.getenv("DB_HOST", "localhost")
+        db_port = os.getenv("DB_PORT", "3306")
+        db_name = os.getenv("DB_NAME", "parcel_drop")
 
         database_url = (
             f"mysql+pymysql://"
@@ -72,10 +64,16 @@ def create_app():
             f"{db_host}:{db_port}/"
             f"{db_name}"
         )
+        print(f"[Local] Connecting to MySQL: {db_host}")
 
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-
-
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_size": 10,
+        "pool_recycle": 3600,
+        "pool_pre_ping": True,
+        "connect_args": {"timeout": 10}
+    }
 
     # ========================================================
     # INITIALIZE FLASK EXTENSIONS
@@ -105,51 +103,23 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-
-        return User.query.get(
-            int(user_id)
-        )
+        return User.query.get(int(user_id))
 
     # ========================================================
-    # REGISTER PARCEL ROUTES
+    # REGISTER BLUEPRINTS
     # ========================================================
 
     from APP.routes.parcels import parcels
-
-    app.register_blueprint(
-        parcels
-    )
-
-    # ========================================================
-    # REGISTER AUTHENTICATION ROUTES
-    # ========================================================
-
     from APP.routes.auth import auth
-
-    app.register_blueprint(
-        auth
-    )
-
-    # ========================================================
-    # REGISTER DRIVER ROUTES
-    # ========================================================
-
     from APP.routes.drivers import drivers
-
-    app.register_blueprint(
-        drivers
-    )
-
     from APP.routes.admin import admin
-
-    app.register_blueprint(
-        admin
-    )
-
     from APP.routes.reports import reports
-    app.register_blueprint(
-        reports
-    )
+
+    app.register_blueprint(parcels)
+    app.register_blueprint(auth)
+    app.register_blueprint(drivers)
+    app.register_blueprint(admin)
+    app.register_blueprint(reports)
 
     # ========================================================
     # HOME PAGE
@@ -157,28 +127,16 @@ def create_app():
 
     @app.route("/")
     def home():
-
         return """
         <!DOCTYPE html>
         <html>
         <head>
             <title>Parcel Drop System</title>
         </head>
-
         <body>
-
             <h1>Parcel Drop System</h1>
-
-            <p>
-                Welcome to the Parcel Drop System.
-            </p>
-
-            <p>
-                <a href="/book">
-                    Book a Parcel
-                </a>
-            </p>
-
+            <p>Welcome to the Parcel Drop System.</p>
+            <p><a href="/book">Book a Parcel</a></p>
         </body>
         </html>
         """
@@ -202,9 +160,9 @@ app = create_app()
 # ============================================================
 
 if __name__ == "__main__":
-
+    port = int(os.getenv("PORT", 5000))
     app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=True
+        host="0.0.0.0",
+        port=port,
+        debug=False
     )
