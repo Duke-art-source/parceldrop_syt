@@ -77,6 +77,11 @@ def create_app():
         "pool_recycle": 3600,
         "pool_pre_ping": True,
     }
+    
+    # Enable SQLAlchemy logging for debugging
+    import logging
+    logging.basicConfig()
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
     # ========================================================
     # INITIALIZE FLASK EXTENSIONS
