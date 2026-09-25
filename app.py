@@ -72,7 +72,6 @@ def create_app():
         "pool_size": 10,
         "pool_recycle": 3600,
         "pool_pre_ping": True,
-        "connect_args": {"timeout": 10}
     }
 
     # ========================================================
