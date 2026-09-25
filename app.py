@@ -32,7 +32,7 @@ def create_app():
 
     app.config["SECRET_KEY"] = os.getenv(
         "SECRET_KEY",
-        "dev-secret-key"
+        "dev-secret-key-change-in-production"
     )
 
     # =========================================================
@@ -137,6 +137,7 @@ def create_app():
         <body>
             <h1>Parcel Drop System</h1>
             <p>Welcome to the Parcel Drop System.</p>
+            <p><a href="/login">Login</a></p>
             <p><a href="/book">Book a Parcel</a></p>
         </body>
         </html>
