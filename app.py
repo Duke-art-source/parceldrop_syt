@@ -41,15 +41,19 @@ def create_app():
 
     database_url = os.getenv("DATABASE_URL")
 
-    if database_url:
-        # Railway provides mysql:// URL, convert to mysql+pymysql://
+    # Debug: Print what we're getting
+    print(f"DEBUG: DATABASE_URL = {database_url}")
+    print(f"DEBUG: All env vars: {dict(os.environ)}")
+
+    if database_url and database_url.strip():
+        # Railway environment
         if database_url.startswith("mysql://"):
             database_url = database_url.replace(
                 "mysql://",
                 "mysql+pymysql://",
                 1
             )
-        print(f"[Railway] Using private MySQL connection")
+        print(f"[Railway] Using MySQL connection: {database_url[:50]}...")
     else:
         # Local development fallback
         db_user = os.getenv("DB_USER", "root")
