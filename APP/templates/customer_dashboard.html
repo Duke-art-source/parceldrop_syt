@@ -1,174 +1,495 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Parcel Drop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
 
-    <title>Customer Dashboard - Parcel Drop System</title>
+        /* ========== NAVBAR ========== */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar-logo {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .toggle-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            width: 250px;
+            background: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 60px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar-menu li {
+            padding: 0;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: #333;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #f0f0f0;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .container {
+            margin-left: 250px;
+            margin-top: 60px;
+            padding: 2rem;
+            min-height: calc(100vh - 60px);
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .welcome-msg {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* ========== CARDS ========== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* ========== PARCELS TABLE ========== */
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead {
+            background: #f8f9fa;
+        }
+
+        table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+        }
+
+        table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-shipped {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .toggle-btn {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                top: 60px;
+            }
+
+            .sidebar.hidden {
+                transform: translateX(-100%);
+            }
+
+            .container {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-msg {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            table th,
+            table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .navbar {
+                padding: 0.75rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-msg {
+                font-size: 1.2rem;
+            }
+
+            .card-value {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            table th,
+            table td {
+                padding: 0.5rem 0.25rem;
+            }
+
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ========== OVERLAY ========== */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+    </style>
 </head>
-
 <body>
 
-    <h1>Parcel Drop System</h1>
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar">
+        <div style="display: flex; align-items: center;">
+            <button class="toggle-btn" id="toggleBtn">☰</button>
+            <span class="navbar-logo">📦</span>
+            <span class="navbar-brand">Parcel Drop</span>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <span>👤 {{ user.name }}</span>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Logout</a>
+        </div>
+    </nav>
 
-    <h2>Customer Dashboard</h2>
+    <!-- ========== OVERLAY ========== -->
+    <div class="overlay" id="overlay"></div>
 
-    <p>
-        Welcome, {{ current_user.name }}.
-    </p>
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('parcels.customer_dashboard') }}" class="active">📊 Dashboard</a></li>
+            <li><a href="{{ url_for('parcels.book') }}">📦 Book Parcel</a></li>
+            <li><a href="{{ url_for('parcels.track') }}">📍 Track Parcel</a></li>
+            <li><a href="#payments">💳 Payments</a></li>
+            <li><a href="#history">📜 History</a></li>
+            <li><a href="#settings">⚙️ Settings</a></li>
+        </ul>
+    </aside>
 
-    <p>
-        <a href="{{ url_for('auth.logout') }}">
-            Logout
-        </a>
-    </p>
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1 class="welcome-msg">Welcome, {{ user.name }}! 👋</h1>
+            <p class="subtitle">Manage your parcels and shipments</p>
+        </div>
 
-    <hr>
+        <!-- STATS CARDS -->
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Active Parcels</div>
+                <div class="card-value">{{ parcels|length }}</div>
+                <div class="card-desc">Parcels in transit or pending</div>
+            </div>
 
-    <!-- =====================================================
-         DASHBOARD STATISTICS
-         ===================================================== -->
+            <div class="card">
+                <div class="card-icon">✅</div>
+                <div class="card-title">Delivered</div>
+                <div class="card-value">12</div>
+                <div class="card-desc">Successfully delivered</div>
+            </div>
 
-    <h3>My Parcel Summary</h3>
+            <div class="card">
+                <div class="card-icon">⏳</div>
+                <div class="card-title">Pending</div>
+                <div class="card-value">3</div>
+                <div class="card-desc">Awaiting pickup</div>
+            </div>
+        </div>
 
-    <p>
-        <strong>Total Parcels:</strong>
-        {{ total_parcels }}
-    </p>
+        <!-- QUICK ACTIONS -->
+        <div class="section">
+            <h2 class="section-title">Quick Actions</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="{{ url_for('parcels.book') }}" class="btn">📦 Book New Parcel</a>
+                <a href="{{ url_for('parcels.track') }}" class="btn btn-secondary">📍 Track Parcel</a>
+            </div>
+        </div>
 
-    <p>
-        <strong>Pending:</strong>
-        {{ pending_parcels }}
-    </p>
+        <!-- PARCELS TABLE -->
+        <div class="section">
+            <h2 class="section-title">Your Parcels</h2>
+            {% if parcels %}
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parcel ID</th>
+                            <th>Recipient</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for parcel in parcels %}
+                        <tr>
+                            <td>#{{ parcel.id }}</td>
+                            <td>{{ parcel.recipient_name }}</td>
+                            <td>{{ parcel.destination }}</td>
+                            <td>
+                                <span class="status-badge status-{{ parcel.status|lower }}">
+                                    {{ parcel.status }}
+                                </span>
+                            </td>
+                            <td>{{ parcel.created_at.strftime('%Y-%m-%d') if parcel.created_at else 'N/A' }}</td>
+                            <td><a href="{{ url_for('parcels.track', parcel_id=parcel.id) }}" class="btn" style="font-size: 0.85rem; padding: 0.5rem 1rem;">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="text-align: center; color: #666; padding: 2rem;">No parcels found. <a href="{{ url_for('parcels.book') }}">Book one now!</a></p>
+            {% endif %}
+        </div>
 
-    <p>
-        <strong>In Transit:</strong>
-        {{ in_transit_parcels }}
-    </p>
+    </main>
 
-    <p>
-        <strong>Delivered:</strong>
-        {{ delivered_parcels }}
-    </p>
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        const toggleBtn = document.getElementById('toggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
 
-    <hr>
+        // Toggle sidebar
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+            overlay.classList.toggle('active');
+        });
 
-    <!-- =====================================================
-         PARCEL HISTORY
-         ===================================================== -->
+        // Close sidebar when overlay clicked
+        overlay.addEventListener('click', () => {
+            sidebar.classList.add('hidden');
+            overlay.classList.remove('active');
+        });
 
-    <h3>My Parcels</h3>
+        // Close sidebar on menu link click (mobile)
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.add('hidden');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
 
-    {% if customer_parcels %}
-
-        <table border="1"
-               cellpadding="8"
-               cellspacing="0">
-
-            <thead>
-
-                <tr>
-
-                    <th>Tracking Number</th>
-
-                    <th>Description</th>
-
-                    <th>Pickup</th>
-
-                    <th>Destination</th>
-
-                    <th>Pickup Date</th>
-
-                    <th>Pickup Time</th>
-
-                    <th>Status</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for parcel in customer_parcels %}
-
-                    <tr>
-
-                        <td>
-                            <strong>
-                                <a href="{{ url_for(
-    'parcels.customer_parcel_details',
-    parcel_id=parcel.id
-) }}">
-    <strong>
-        {{ parcel.tracking_number }}
-    </strong>
-</a>
-                            </strong>
-                        </td>
-
-                        <td>
-                            {{ parcel.parcel_description }}
-                        </td>
-
-                        <td>
-                            {{ parcel.pickup_address }}
-                        </td>
-
-                        <td>
-                            {{ parcel.destination_address }}
-                        </td>
-
-                        <td>
-                            {% if parcel.pickup_date %}
-                                {{ parcel.pickup_date }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            {% if parcel.pickup_time %}
-                                {{ parcel.pickup_time }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            <strong>
-                                {{ parcel.status }}
-                            </strong>
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    {% else %}
-
-        <p>
-            You do not have any parcels yet.
-        </p>
-
-    {% endif %}
-
-    <hr>
-
-    <p>
-        <a href="{{ url_for('parcels.book_parcel') }}">
-            Book a New Parcel
-        </a>
-    </p>
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('hidden');
+                overlay.classList.remove('active');
+            }
+        });
+    </script>
 
 </body>
-
 </html>
