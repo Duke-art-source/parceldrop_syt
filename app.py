@@ -43,10 +43,9 @@ def create_app():
 
     # Debug: Print what we're getting
     print(f"DEBUG: DATABASE_URL = {database_url}")
-    print(f"DEBUG: All env vars: {dict(os.environ)}")
 
     if database_url and database_url.strip():
-        # Railway environment
+        # Railway environment - convert mysql:// to mysql+pymysql://
         if database_url.startswith("mysql://"):
             database_url = database_url.replace(
                 "mysql://",
