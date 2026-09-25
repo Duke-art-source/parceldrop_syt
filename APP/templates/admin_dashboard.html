@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - Parcel Drop System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .nav { background: #333; color: white; padding: 15px; margin-bottom: 20px; }
+        .nav a { color: white; margin-right: 20px; text-decoration: none; }
+        .nav a:hover { text-decoration: underline; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        .btn { background: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px; text-decoration: none; }
+        .btn:hover { background: #0056b3; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <h1>Parcel Drop System - Admin</h1>
+            <a href="/">Home</a>
+            <a href="/book">📦 Book Parcel</a>
+            <a href="/track">📍 Track Parcel</a>
+            <a href="/logout">Logout</a>
+        </div>
+
+        <div class="section">
+            <h2>Welcome, Admin!</h2>
+            <p>Manage your parcel delivery system.</p>
+        </div>
+
+        <div class="section">
+            <h2>Quick Actions</h2>
+            <a href="/book" class="btn btn-success">📦 Book New Parcel</a>
+            <a href="/track" class="btn">📍 Track Parcel</a>
+            <a href="/admin/users" class="btn">👥 Manage Users</a>
+            <a href="/admin/reports" class="btn">📊 View Reports</a>
+        </div>
+
+        <div class="section">
+            <h2>System Status</h2>
+            <p>✅ Database Connected</p>
+            <p>✅ All Systems Online</p>
+        </div>
+    </div>
+</body>
+</html>
