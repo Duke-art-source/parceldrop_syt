@@ -17,7 +17,6 @@
             color: #333;
         }
 
-        /* ========== NAVBAR ========== */
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 1rem;
@@ -50,7 +49,6 @@
             cursor: pointer;
         }
 
-        /* ========== SIDEBAR ========== */
         .sidebar {
             width: 250px;
             background: white;
@@ -92,7 +90,6 @@
             color: #667eea;
         }
 
-        /* ========== MAIN CONTENT ========== */
         .container {
             margin-left: 250px;
             margin-top: 60px;
@@ -115,7 +112,6 @@
             font-size: 1rem;
         }
 
-        /* ========== CARDS ========== */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -160,7 +156,6 @@
             margin-top: 0.5rem;
         }
 
-        /* ========== BUTTONS ========== */
         .btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
@@ -186,7 +181,6 @@
             background: #5a6268;
         }
 
-        /* ========== PARCELS TABLE ========== */
         .section {
             background: white;
             border-radius: 10px;
@@ -255,7 +249,21 @@
             color: #155724;
         }
 
-        /* ========== RESPONSIVE ========== */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .toggle-btn {
                 display: block;
@@ -264,10 +272,6 @@
             .sidebar {
                 width: 100%;
                 top: 60px;
-            }
-
-            .sidebar.hidden {
-                transform: translateX(-100%);
             }
 
             .container {
@@ -283,12 +287,7 @@
                 font-size: 1.5rem;
             }
 
-            table {
-                font-size: 0.9rem;
-            }
-
-            table th,
-            table td {
+            table th, table td {
                 padding: 0.75rem 0.5rem;
             }
 
@@ -315,36 +314,15 @@
                 font-size: 0.9rem;
             }
 
-            table th,
-            table td {
+            table th, table td {
                 padding: 0.5rem 0.25rem;
             }
-
-            .table-responsive {
-                font-size: 0.85rem;
-            }
-        }
-
-        /* ========== OVERLAY ========== */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
-
-        .overlay.active {
-            display: block;
         }
     </style>
 </head>
 <body>
 
-    <!-- ========== NAVBAR ========== -->
+    <!-- NAVBAR -->
     <nav class="navbar">
         <div style="display: flex; align-items: center;">
             <button class="toggle-btn" id="toggleBtn">☰</button>
@@ -352,31 +330,30 @@
             <span class="navbar-brand">Parcel Drop</span>
         </div>
         <div style="display: flex; gap: 1rem; align-items: center;">
-            <span>👤 {{ user.name }}</span>
-            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Logout</a>
+            <span>👤 {{ user.name if user else 'Customer' }}</span>
+            <a href="/logout" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Logout</a>
         </div>
     </nav>
 
-    <!-- ========== OVERLAY ========== -->
+    <!-- OVERLAY -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- ========== SIDEBAR ========== -->
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <ul class="sidebar-menu">
-            <li><a href="{{ url_for('parcels.customer_dashboard') }}" class="active">📊 Dashboard</a></li>
-            <li><a href="{{ url_for('parcels.book') }}">📦 Book Parcel</a></li>
-            <li><a href="{{ url_for('parcels.track') }}">📍 Track Parcel</a></li>
+            <li><a href="/customer-dashboard" class="active">📊 Dashboard</a></li>
+            <li><a href="/book">📦 Book Parcel</a></li>
+            <li><a href="/track">📍 Track Parcel</a></li>
             <li><a href="#payments">💳 Payments</a></li>
             <li><a href="#history">📜 History</a></li>
             <li><a href="#settings">⚙️ Settings</a></li>
         </ul>
     </aside>
 
-    <!-- ========== MAIN CONTENT ========== -->
+    <!-- MAIN CONTENT -->
     <main class="container">
-        <!-- HEADER -->
         <div class="header">
-            <h1 class="welcome-msg">Welcome, {{ user.name }}! 👋</h1>
+            <h1 class="welcome-msg">Welcome, {{ user.name if user else 'Customer' }}! 👋</h1>
             <p class="subtitle">Manage your parcels and shipments</p>
         </div>
 
@@ -385,7 +362,7 @@
             <div class="card">
                 <div class="card-icon">📦</div>
                 <div class="card-title">Active Parcels</div>
-                <div class="card-value">{{ parcels|length }}</div>
+                <div class="card-value">{{ parcels|length if parcels else 0 }}</div>
                 <div class="card-desc">Parcels in transit or pending</div>
             </div>
 
@@ -408,15 +385,15 @@
         <div class="section">
             <h2 class="section-title">Quick Actions</h2>
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <a href="{{ url_for('parcels.book') }}" class="btn">📦 Book New Parcel</a>
-                <a href="{{ url_for('parcels.track') }}" class="btn btn-secondary">📍 Track Parcel</a>
+                <a href="/book" class="btn">📦 Book New Parcel</a>
+                <a href="/track" class="btn btn-secondary">📍 Track Parcel</a>
             </div>
         </div>
 
         <!-- PARCELS TABLE -->
         <div class="section">
             <h2 class="section-title">Your Parcels</h2>
-            {% if parcels %}
+            {% if parcels and parcels|length > 0 %}
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -460,19 +437,16 @@
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
 
-        // Toggle sidebar
         toggleBtn.addEventListener('click', () => {
             sidebar.classList.toggle('hidden');
             overlay.classList.toggle('active');
         });
 
-        // Close sidebar when overlay clicked
         overlay.addEventListener('click', () => {
             sidebar.classList.add('hidden');
             overlay.classList.remove('active');
         });
 
-        // Close sidebar on menu link click (mobile)
         document.querySelectorAll('.sidebar-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 768) {
@@ -482,7 +456,6 @@
             });
         });
 
-        // Handle window resize
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 sidebar.classList.remove('hidden');
