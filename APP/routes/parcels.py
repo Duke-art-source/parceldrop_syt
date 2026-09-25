@@ -58,7 +58,6 @@ def generate_tracking_number():
 
 
 @parcels.route("/book", methods=["GET", "POST"])
-@login_required
 def book_parcel():
 
     # ============================================================
@@ -733,63 +732,16 @@ def track_parcel():
 @parcels.route("/customer-dashboard")
 @login_required
 def customer_dashboard():
-
     if current_user.role != "Customer":
-
-        flash(
-            "You do not have permission to access the customer dashboard.",
-            "danger"
-        )
-
-        if current_user.role in ["Admin", "Staff"]:
-
-            return redirect(
-                url_for("parcels.manage_parcels")
-            )
-
-        return redirect(
-            url_for("parcels.track_parcel")
-        )
-
-    customer_parcels = Parcel.query.filter_by(
-        customer_id=current_user.id
-    ).order_by(
-        Parcel.created_at.desc()
-    ).all()
-
-    total_parcels = len(
-        customer_parcels
-    )
-
-    pending_parcels = sum(
-        1
-        for parcel in customer_parcels
-        if parcel.status == "Pending"
-    )
-
-    in_transit_parcels = sum(
-        1
-        for parcel in customer_parcels
-        if parcel.status in [
-            "Received",
-            "In Transit",
-            "Out for Delivery"
-        ]
-    )
-
-    delivered_parcels = sum(
-        1
-        for parcel in customer_parcels
-        if parcel.status == "Delivered"
-    )
-
+        return redirect(url_for("home"))
+    
+    # Get customer's parcels
+    my_parcels = Parcel.query.filter_by(customer_id=current_user.id).all()
+    
     return render_template(
         "customer_dashboard.html",
-        customer_parcels=customer_parcels,
-        total_parcels=total_parcels,
-        pending_parcels=pending_parcels,
-        in_transit_parcels=in_transit_parcels,
-        delivered_parcels=delivered_parcels
+        parcels=my_parcels,
+        user=current_user
     )
 
 

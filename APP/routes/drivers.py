@@ -200,54 +200,17 @@ def create_driver():
 
 @drivers.route("/driver-dashboard")
 @login_required
-def driver_dashboard():
-
-    if not driver_required():
-        flash("Driver access required.", "danger")
-        return redirect(url_for("parcels.track_parcel"))
-
-    assigned_parcels = Parcel.query.filter_by(
-        assigned_driver_id=current_user.id
-    ).order_by(
-        Parcel.created_at.desc()
-    ).all()
-
-    total = len(assigned_parcels)
-
-    pending = sum(
-        1 for p in assigned_parcels
-        if p.status == "Pending"
-    )
-
-    received = sum(
-        1 for p in assigned_parcels
-        if p.status == "Received"
-    )
-
-    in_transit = sum(
-        1 for p in assigned_parcels
-        if p.status == "In Transit"
-    )
-
-    out_for_delivery = sum(
-        1 for p in assigned_parcels
-        if p.status == "Out for Delivery"
-    )
-
-    delivered = sum(
-        1 for p in assigned_parcels
-        if p.status == "Delivered"
-    )
-
+def dashboard():
+    if current_user.role != "Driver":
+        return redirect(url_for("home"))
+    
+    # Get driver's assigned parcels
+    assigned_parcels = Parcel.query.filter_by(driver_id=current_user.id).all()
+    
     return render_template(
         "driver_dashboard.html",
         parcels=assigned_parcels,
-        total=total,
-        pending=pending,
-        received=received,
-        in_transit=in_transit,
-        out_for_delivery=out_for_delivery,
-        delivered=delivered
+        user=current_user
     )
 
 

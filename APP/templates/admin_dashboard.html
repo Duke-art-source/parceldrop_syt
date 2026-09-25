@@ -43,6 +43,25 @@
             <p>✅ Database Connected</p>
             <p>✅ All Systems Online</p>
         </div>
+
+        <div class="section">
+            <h2>Create Sample Users</h2>
+            <button id="create-users" class="btn btn-success">👥 Create Sample Users</button>
+            <div id="user-status" style="margin-top: 10px;"></div>
+        </div>
     </div>
+
+    <script>
+        document.getElementById('create-users').addEventListener('click', function() {
+            fetch('/create-sample-users', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('user-status').innerText = data.message;
+                })
+                .catch(error => {
+                    document.getElementById('user-status').innerText = 'Error creating users.';
+                });
+        });
+    </script>
 </body>
 </html>

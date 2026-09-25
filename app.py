@@ -41,11 +41,7 @@ def create_app():
 
     database_url = os.getenv("DATABASE_URL")
 
-    # Debug: Print what we're getting
-    print(f"DEBUG: DATABASE_URL = {database_url}")
-
     if database_url and database_url.strip():
-        # Railway environment - convert mysql:// to mysql+pymysql://
         if database_url.startswith("mysql://"):
             database_url = database_url.replace(
                 "mysql://",
@@ -54,7 +50,6 @@ def create_app():
             )
         print(f"[Railway] Using MySQL connection: {database_url[:50]}...")
     else:
-        # Local development fallback
         db_user = os.getenv("DB_USER", "root")
         db_password = quote_plus(os.getenv("DB_PASSWORD", ""))
         db_host = os.getenv("DB_HOST", "localhost")
@@ -76,26 +71,14 @@ def create_app():
         "pool_recycle": 3600,
         "pool_pre_ping": True,
     }
-    
-    # Enable SQLAlchemy logging for debugging
-    import logging
-    logging.basicConfig()
-    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
     # ========================================================
     # INITIALIZE FLASK EXTENSIONS
     # ========================================================
 
     db.init_app(app)
-
-    migrate.init_app(
-        app,
-        db
-    )
-
-    login_manager.init_app(
-        app
-    )
+    migrate.init_app(app, db)
+    login_manager.init_app(app)
 
     # ========================================================
     # IMPORT MODELS
@@ -105,12 +88,30 @@ def create_app():
     from APP.models.parcel import Parcel
 
     # ========================================================
+    # CREATE DATABASE TABLES ON STARTUP
+    # ========================================================
+
+    with app.app_context():
+        try:
+            db.create_all()
+            print("✅ Database tables created/verified")
+        except Exception as e:
+            print(f"⚠️ Error creating tables: {e}")
+
+    # ========================================================
     # LOGIN MANAGER
     # ========================================================
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))
+        return User.query.get(int(user_id))        from app import app, db
+        from APP.models.user import User
+        app.app_context().push()
+        user = User(name="Admin", email="admin@test.com", role="Admin")
+        user.set_password("admin123")
+        db.session.add(user)
+        db.session.commit()
+        print("User created!")
 
     # ========================================================
     # REGISTER BLUEPRINTS
